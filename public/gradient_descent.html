@@ -1,0 +1,559 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<script src="assets/lib/template.v1.js"></script>
+<script type="text/front-matter">
+  title: Gradient Descent
+  authors:
+    - Fabian Pedregosa: http://fa.bianp.net
+  affiliations:
+    - UC Berkeley: http://bair.berkeley.edu/
+    - ETH Zurich: http://www.inf.ethz.ch/
+</script>
+
+<!-- OpenGraph Info -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+      TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        Macros: {
+          RR: "{\\mathbb{R}}",
+          argmin: "{\\operatorname*{\\mathrm{arg\\,min}}}",
+          minimize: "{\\operatorname*{\\mathrm{minimize}}}",
+          bold: ["{\\bf #1}",1],
+          xx: "{\\boldsymbol x}",
+          uu: "{\\boldsymbol u}",
+          yy: "{\\boldsymbol y}",
+          ss: "{\\boldsymbol s}",
+        }
+      },
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<link rel="stylesheet" type="text/css" href="assets/widgets.css">
+
+<!-- Required -->
+<script src="assets/lib/lib.js"></script>
+<script src="assets/utils.js"></script>
+<script>
+  var renderQueue = [];
+  function renderMath(elem) {
+    // renderMathInElement(
+    //     elem,
+    //     {
+    //         delimiters: [
+    //             {left: "$$", right: "$$", display: true},
+    //             {left: "$", right: "$", display: false},
+    //         ]
+    //     }
+    // );
+  }
+
+  var deleteQueue = [];
+  function renderLoading(figure) {
+    var loadingScreen = figure.append("svg")
+    .style("width", figure.style("width"))
+    .style("height", figure.style("height"))
+    .style("position","absolute")
+    .style("top", "0px")
+    .style("left","0px")
+    .style("background","white")
+    .style("border", "0px dashed #DDD")
+    .style("opacity", 1)
+
+    return function(callback) { loadingScreen.remove() };
+
+  }
+
+</script>
+<div id="math-cache" style="display: none;">
+  <dt-math class="star">\star</dt-math>
+  <dt-math class="plus">+</dt-math>
+  <dt-math class="minus">-</dt-math>
+  <dt-math class="equals">=</dt-math>
+  <dt-math class="alpha">\alpha</dt-math>
+  <dt-math class="lambda">\lambda</dt-math>
+  <dt-math class="beta">\beta</dt-math>
+  <dt-math class="r">R</dt-math>
+  <dt-math class="alpha-equals">\alpha=</dt-math>
+  <dt-math class="beta-equals">\beta=</dt-math>
+  <dt-math class="beta-equals-zero">\beta = 0</dt-math>
+  <dt-math class="beta-equals-one">\beta=1</dt-math>
+  <dt-math class="alpha-equals-one-over-lambda-i">\alpha = 1/\lambda_i</dt-math>
+  <dt-math class="model">\text{model}</dt-math>
+  <dt-math class="p">0 p_1</dt-math>
+  <dt-math class="phat">0 \bar{p}_1</dt-math>
+  <dt-math class="two-sqrt-beta">2\sqrt{\beta}</dt-math>
+  <dt-math class="lambda-i">\lambda_i</dt-math>
+  <dt-math class="lambda-i-equals-zero">\lambda_i = 0</dt-math>
+  <dt-math class="alpha-gt-one-over-lambda-i">\alpha > 1/\lambda_i</dt-math>
+  <dt-math class="max-sigma-one">\max\{|\sigma_1|,|\sigma_2|\} > 1</dt-math>
+  <dt-math class="x-i-k">x_i^k - x_i^*</dt-math>
+  <dt-math class="xi-i">\xi_i</dt-math>
+  <dt-math class="beta-equals-one-minus">\beta = (1 - \sqrt{\alpha \lambda_i})^2</dt-math>
+</div>
+<script>
+  function MathCache(id) {
+    return document.querySelector("#math-cache ." + id).innerHTML;
+  }
+</script>
+<svg style="display: none;">
+  <g id="pointerThingy">
+    <circle fill="none" stroke="#FF6C00" stroke-linecap="round" cx="0" cy="0" r="14"/>
+    <circle fill="#FF6C00" cx="0" cy="0" r="11"/>
+    <path id="XMLID_173_" fill="#FFFFFF" d="M-3.2-1.3c0-0.1,0-0.2,0-0.3c0-0.1,0-0.2,0-0.3c-0.6,0-1.2,0-1.8,0c0,0.6,0,1.2,0,1.8
+      c0.2,0,0.4,0,0.6,0c0-0.4,0-0.8,0-1.2c0,0,0.1,0,0.1,0c0.3,0,0.5,0,0.8,0C-3.4-1.3-3.3-1.3-3.2-1.3c0,0.2,0,0.4,0,0.6
+      c0.2,0,0.4,0,0.6,0c0,0.2,0,0.4,0,0.6c0.2,0,0.4,0,0.6,0c0,0,0,0,0-0.1c0-1.6,0-3.2,0-4.8c0-0.6,0-1.2,0-1.8c0,0,0,0,0.1,0
+      c0.3,0,0.7,0,1,0c0.1,0,0.1,0,0.2,0c0-0.2,0-0.4,0-0.6c-0.4,0-0.8,0-1.2,0C-2-7.2-2-7-2-6.8c0,0,0,0-0.1,0c-0.2,0-0.3,0-0.5,0
+      c0,0,0,0-0.1,0c0,1.8,0,3.6,0,5.5c-0.2,0-0.3,0-0.4,0C-3.1-1.3-3.2-1.3-3.2-1.3z M1.1-3.7C1-3.8,1-3.8,1.1-3.7C1-4,1-4.1,1-4.3
+      c0,0,0,0,0-0.1c-0.4,0-0.8,0-1.2,0c0-0.8,0-1.6,0-2.4c-0.2,0-0.4,0-0.6,0c0,1.8,0,3.6,0,5.5c0.2,0,0.4,0,0.6,0c0-0.8,0-1.6,0-2.4
+      c0,0,0.1,0,0.1,0C0.3-3.7,0.6-3.7,1.1-3.7C1-3.7,1-3.7,1.1-3.7C1.1-3.7,1-3.7,1.1-3.7c0,0.8,0,1.6,0,2.3c0,0,0,0.1,0,0.1
+      c0.2,0,0.4,0,0.6,0c0-0.6,0-1.2,0-1.8c0.4,0,0.8,0,1.2,0c0,0.8,0,1.6,0,2.4c0.2,0,0.4,0,0.6,0c0-0.6,0-1.2,0-1.8c0.2,0,0.4,0,0.6,0
+      c0,0,0,0,0,0.1c0,0.1,0,0.3,0,0.4c0,0,0,0.1,0,0.1c0.2,0,0.4,0,0.5,0c0,0,0.1,0,0.1,0.1c0,0.2,0,0.5,0,0.7c0,1.1,0,2.3,0,3.4
+      c0,0,0,0,0,0.1c-0.2,0-0.4,0-0.6,0c0,0,0,0,0,0c0,0.6,0,1.1,0,1.7c0,0,0,0,0,0.1c-0.2,0-0.4,0-0.6,0c0,0.4,0,0.8,0,1.2
+      c-1.6,0-3.2,0-4.9,0c0-0.4,0-0.8,0-1.2c-0.2,0-0.4,0-0.6,0C-2,3.8-2,3.4-2,3c-0.2,0-0.4,0-0.6,0c0,0.4,0,0.8,0,1.2
+      c0.2,0,0.4,0,0.6,0C-2,4.8-2,5.4-2,6c2,0,4.1,0,6.1,0c0-0.1,0-0.2,0-0.3c0-0.5,0-0.9,0-1.4c0-0.1,0-0.1,0-0.2c0.2,0,0.4,0,0.5,0
+      c0.1,0,0.1,0,0.1-0.1c0-0.4,0-0.9,0-1.3c0-0.1,0-0.3,0-0.4c0.1,0,0.2,0,0.3,0c0.1,0,0.2,0,0.3,0c0-1.4,0-2.8,0-4.3
+      c-0.2,0-0.4,0-0.6,0c0-0.2,0-0.4,0-0.6c-0.2,0-0.4,0-0.6,0c0-0.2,0-0.4,0-0.6c-0.4,0-0.8,0-1.2,0c0-0.2,0-0.4,0-0.6
+      c-0.1,0-0.2,0-0.3,0c-0.4,0-0.9,0-1.3,0C1.2-3.7,1.1-3.7,1.1-3.7z M-3.2,1.8c0,0.4,0,0.8,0,1.2c0.2,0,0.4,0,0.5,0
+      c0.1,0,0.1,0,0.1-0.1c0-0.3,0-0.6,0-1c0-0.1,0-0.1,0-0.2C-2.8,1.8-3,1.8-3.2,1.8c0-0.4,0-0.8,0-1.2c-0.2,0-0.4,0-0.6,0
+      c0-0.2,0-0.4,0-0.6c-0.2,0-0.4,0-0.6,0c0,0.2,0,0.4,0,0.6c0.2,0,0.4,0,0.6,0c0,0,0,0,0,0.1c0,0.1,0,0.3,0,0.4c0,0.2,0,0.5,0,0.7
+      c0,0,0,0.1,0.1,0.1c0.1,0,0.2,0,0.3,0C-3.4,1.8-3.3,1.8-3.2,1.8z"/>
+    <path id="XMLID_172_" fill="#FFFFFF" d="M4.1,4.2C4.1,4.2,4.1,4.2,4.1,4.2c0-0.6,0-1.2,0-1.8c0,0,0,0,0,0c0.2,0,0.4,0,0.6,0
+      c0,0,0-0.1,0-0.1c0-1.1,0-2.3,0-3.4c0-0.2,0-0.5,0-0.7c0,0,0-0.1-0.1-0.1c-0.2,0-0.4,0-0.5,0c0,0,0-0.1,0-0.1c0-0.1,0-0.3,0-0.4
+      c0,0,0-0.1,0-0.1c-0.2,0-0.4,0-0.6,0c0,0.6,0,1.2,0,1.8c-0.2,0-0.4,0-0.6,0c0-0.8,0-1.6,0-2.4c-0.4,0-0.8,0-1.2,0
+      c0,0.6,0,1.2,0,1.8c-0.2,0-0.4,0-0.6,0c0,0,0-0.1,0-0.1c0-0.7,0-1.5,0-2.2c0,0,0-0.1,0-0.1l0,0c0.1,0,0.2,0,0.2,0
+      c0.4,0,0.9,0,1.3,0c0.1,0,0.2,0,0.3,0c0,0.2,0,0.4,0,0.6c0.4,0,0.8,0,1.2,0c0,0.2,0,0.4,0,0.6c0.2,0,0.4,0,0.6,0c0,0.2,0,0.4,0,0.6
+      c0.2,0,0.4,0,0.6,0c0,1.4,0,2.8,0,4.3c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3,0c0,0.1,0,0.3,0,0.4c0,0.4,0,0.9,0,1.3
+      c0,0.1,0,0.1-0.1,0.1C4.5,4.2,4.3,4.2,4.1,4.2L4.1,4.2z"/>
+    <path id="XMLID_171_" fill="#FFFFFF" d="M4.1,4.2c0,0.1,0,0.1,0,0.2c0,0.5,0,0.9,0,1.4c0,0.1,0,0.2,0,0.3C2.1,6,0,6-2,6
+      c0-0.6,0-1.2,0-1.8c-0.2,0-0.4,0-0.6,0c0-0.4,0-0.8,0-1.2C-2.4,3-2.2,3-2,3c0,0.4,0,0.8,0,1.2c0.2,0,0.4,0,0.6,0c0,0.4,0,0.8,0,1.2
+      c1.6,0,3.2,0,4.9,0c0-0.4,0-0.8,0-1.2C3.7,4.2,3.9,4.2,4.1,4.2L4.1,4.2z"/>
+    <path id="XMLID_170_" fill="#FFFFFF" d="M-2-6.8c0,0.6,0,1.2,0,1.8c0,1.6,0,3.2,0,4.8c0,0,0,0,0,0.1c-0.2,0-0.4,0-0.6,0
+      c0-0.2,0-0.4,0-0.6c-0.2,0-0.4,0-0.6,0c0-0.2,0-0.4,0-0.6l0,0c0.1,0,0.1,0,0.2,0c0.1,0,0.3,0,0.4,0c0-1.8,0-3.6,0-5.5
+      c0,0,0.1,0,0.1,0C-2.4-6.8-2.2-6.8-2-6.8C-2.1-6.8-2-6.8-2-6.8L-2-6.8z"/>
+    <path id="XMLID_169_" fill="#FFFFFF" d="M1.1-3.7C1-3.7,1-3.7,1.1-3.7c-0.4,0-0.8,0-1.2,0c0,0,0,0-0.1,0c0,0.8,0,1.6,0,2.4
+      c-0.2,0-0.4,0-0.6,0c0-1.8,0-3.6,0-5.5c0.2,0,0.4,0,0.6,0c0,0.8,0,1.6,0,2.4c0.4,0,0.8,0,1.2,0c0,0,0,0.1,0,0.1C1-4.1,1-4,1.1-3.7
+      C1-3.8,1-3.8,1.1-3.7L1.1-3.7z"/>
+    <path id="XMLID_168_" fill="#FFFFFF" d="M-3.2,1.8c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3,0c0,0-0.1,0-0.1-0.1c0-0.2,0-0.5,0-0.7
+      c0-0.1,0-0.3,0-0.4c0,0,0,0,0-0.1c-0.2,0-0.4,0-0.6,0c0-0.2,0-0.4,0-0.6c0.2,0,0.4,0,0.6,0c0,0.2,0,0.4,0,0.6c0.2,0,0.4,0,0.6,0
+      C-3.2,0.9-3.2,1.3-3.2,1.8c0.2,0,0.4,0,0.6,0c0,0.1,0,0.1,0,0.2c0,0.3,0,0.6,0,1C-2.6,3-2.7,3-2.7,3c-0.2,0-0.3,0-0.5,0
+      C-3.2,2.6-3.2,2.2-3.2,1.8z"/>
+    <path id="XMLID_167_" fill="#FFFFFF" d="M-3.2-1.3c-0.1,0-0.2,0-0.3,0c-0.3,0-0.5,0-0.8,0c0,0,0,0-0.1,0c0,0.4,0,0.8,0,1.2
+      c-0.2,0-0.4,0-0.6,0c0-0.6,0-1.2,0-1.8c0.6,0,1.2,0,1.8,0c0,0.1,0,0.2,0,0.3C-3.2-1.5-3.2-1.4-3.2-1.3L-3.2-1.3z"/>
+    <path id="XMLID_166_" fill="#FFFFFF" d="M-2-6.8C-2-7-2-7.2-2-7.4c0.4,0,0.8,0,1.2,0c0,0.2,0,0.4,0,0.6c-0.1,0-0.1,0-0.2,0
+      C-1.3-6.8-1.6-6.8-2-6.8C-2-6.8-2-6.8-2-6.8L-2-6.8z"/>
+  </g>
+</svg>
+
+<dt-article class="centered">
+
+  <h1>Gradient Descent</h1>
+  <dt-byline class="l-page"></dt-byline>
+  <p>The first method that we will describe is one of the oldest<dt-cite key="cauchy1847methode,lemarechal2012cauchy"></dt-cite> methods in optimization: gradient descent, also known as steepest descent </p>
+  
+  <figure>
+    <img style="margin-left:100px;  width: 200px" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Augustin-Louis_Cauchy_1901.jpg" alt="">  
+   <figcaption id="expander" style="position:absolute; left:370px; top:10px; width:200px">Augustin-Louis Cauchy was a French mathematician and physicist who made pioneering contributions to mathematical analysis. Motivated by the need to solve "large" quadratic problems (6 variables) that arise in Astronomy, he invented the method of gradient descent. Today, this method is used to comfortably solve a problems with thousands of variables.</figcaption>  
+  </figure>
+  
+
+<hr>
+<h2>Motivation</h2>
+<p>Gradient Descent is an iterative method to solve the following unconstrained optimization problem</p>
+<p style="background-color: #D2E4FC; padding: 1px; border-radius: 8px;">\begin{equation}\label{eq:fw_objective}
+  \minimize_{\boldsymbol{x} \in \RR^p} f(\boldsymbol{x}) ~,
+\end{equation}</p>
+<p>where $f$ is a differentiable function.</p>
+
+  <p><b>Key idea</b>: approximate objective with a quadratic surrogate of the form
+  \begin{equation}
+  Q_t(\xx) = c_t +  \boldsymbol{g}_t^T(\xx - \xx_t)  + \frac{1}{2 \gamma}(\xx - \xx_t)^T (\xx - \xx_t)~.
+  \end{equation}
+  </p>
+  <p>A reasonable condition to impose on this surrogate function is that it at $\xx_t$ it coincides with $f$ in its value and first derivative, that is:
+  \begin{align}
+  Q_t(\xx_t) &amp;= f(\xx_t) \implies c_t = f(\xx_t)\\
+  \nabla Q_t(\xx_t) &amp;= \nabla f(\xx_t) \implies \boldsymbol{g}_t = \nabla f(\xx_t)
+  \end{align}
+  Alternatively, you might also see $Q_t$ as the first-order Taylor expansion of $f$ at $\xx_t$. In all, we have the following surrogate function:
+  \begin{equation}
+  Q_t(\xx_t) = f(\xx_t) +  \nabla f(\xx_t)^T(\xx - \xx_t)  + \frac{1}{2 \gamma}(\xx - \xx_t)^T (\xx - \xx_t)~.
+  \end{equation}
+  </p>
+  <p>
+  We can find the optimum of the function deriving and equating to zero. This way we find
+  \begin{equation}
+  \xx_{t+1} = \argmin_{\xx} Q_t(\xx) = \xx_t - \gamma \nabla f(\xx_t)
+  \end{equation}
+   </p>
+   
+   <h2>The Gradient Descent Algorithm</h2>
+   <p>We can write the full gradient descent algorithm as follows. The algorithm only has one free parameter: the step size $\gamma$.</p>
+   <p class="framed">\begin{align}
+        &amp;\textbf{Input}: \text{initial guess $\xx_0$, step size $\gamma > 0$}\nonumber\\
+        &amp; \textbf{For }t=0, 1, \ldots \textbf{ do } \\
+       &amp;\quad\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma \nabla f(\xx_t)~.\label{eq:update_rule}\\
+       &amp;\textbf{end For loop}\\
+       &amp; \textbf{return } \xx_t
+       \end{align}
+       </p>
+   
+   <h2>Examples</h2>
+  <p>We examine the convergence of gradient descent on three examples: a well-conditioned quadratic, an ill-conditioned quadratic and a non-convex function. </p>
+  <figure style = "position:relative; width:984px; height:400px;">
+    <div id="banana" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+    <div id="sliderAlpha" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+      <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.2</text>
+    </div>
+    <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+      On a well-conditioned quadratic function, the gradient descent converges on few iterations to the optimum.
+    </figcaption>
+  </figure>
+
+  <figure style = "position:relative; width:984px; height:400px;">
+    <div id="banana2" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+    <div id="sliderAlpha2" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+      <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.02</text>
+    </div>
+    <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+      On a badly-conditioned quadratic function, the gradient descent converges takes many more iterations to converge than on the above well-conditioned problem. This is because gradient descent requires a much smaller step size on this problem to converge.
+    </figcaption>
+  </figure>
+
+
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana3" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha3" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.02</text>
+  </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+    Gradient descent also converges on a badly-conditioned non-convex problem. Convergence is slow in this case.
+  </figcaption>
+
+</figure>
+
+
+
+  <script src="assets/lib/contour_plot.js"></script>
+  <script src="assets/iterates.js"></script>
+  <script>
+
+  // Render Foreground
+  var iterControl = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescent, true, true, 300)
+                    .alpha(0.003)
+                    .beta(0)
+                    (d3.select("#banana").style("position","relative"))
+
+  var iterChange = iterControl.control
+  var getw0 = iterControl.w0
+
+  var StepRange = d3.scaleLinear().domain([0,100]).range([0,1.00])
+  var MomentumRange = d3.scaleLinear().domain([0,100]).range([0,0.98])
+
+  var update = function (i,j) { iterChange(i, 0, getw0()) }
+
+  var slidera = sliderGen([230, 40])
+              .ticks([0,0.5, 1.0])
+              .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
+              .change( function (i) {
+                d3.select("#sliderAlpha").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+                iterChange(getalpha(), getbeta(), getw0() )
+              } )
+              .startxval(0.2)
+              .cRadius(7)
+              .shifty(-12)
+              .margins(20,20)  
+  var getalpha = slidera( d3.select("#sliderAlpha")).xval
+  var getbeta = function() {return 0;}
+  // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+
+  iterChange(getalpha(), getbeta(), getw0() )
+
+  // Render Foreground
+  var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescent, true, true, 300)
+                    .alpha(0.003)
+                    .beta(0)
+                    (d3.select("#banana2").style("position","relative"))
+
+  var iterChange2 = iterControl2.control
+  var getw02 = iterControl2.w0
+
+  var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
+
+  var slidera2 = sliderGen([230, 40])
+              .ticks([0,0.01,0.02])
+              .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
+              .change( function (i) {
+                d3.select("#sliderAlpha2").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+                iterChange2(getalpha2(), getbeta2(), getw02() )
+              } )
+              .startxval(0.003)
+              .cRadius(7)
+              .shifty(-12)
+              .margins(20,20)
+  
+  var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
+  var getbeta2 = function() {return 0;}
+  // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+
+  iterChange2(getalpha2(), getbeta2(), getw02() )
+
+
+  // Render Foreground
+  var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescent, true, true, 300)
+                    .alpha(0.003)
+                    .beta(0)
+                    (d3.select("#banana3").style("position","relative"))
+
+  var iterChange3 = iterControl3.control
+  var getw03 = iterControl3.w0
+
+  var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
+
+  var slidera3 = sliderGen([230, 40])
+              .ticks([0,0.01,0.02])
+              .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
+              .change( function (i) {
+                d3.select("#sliderAlpha3").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+                iterChange3(getalpha3(), getbeta3(), getw03() )
+              } )
+              .startxval(0.003)
+              .cRadius(7)
+              .shifty(-12)
+              .margins(20,20)
+  
+  var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
+  var getbeta3 = function() {return 0;}
+  // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+
+  iterChange3(getalpha3(), getbeta3(), getw03() )
+
+  </script>
+
+<h2>On the choice of step size and line search</h2>
+<p>As we have seen in the previous examples, the convergence of gradient is extremely sensible to the choice of step size. The second and third example highlight the necessity of this step size to be <i>adaptive</i>: in regions of large variability of the gradient we would like to take small step sizes, while on regions with small variability we would like to take large step sizes. </p>
+<p>
+  <i>Backtracking line search</i> procedures allow to have select a step size depending on the current iterate and gradient. In this procedure, an initial (optimistic) step size $\gamma_t$ is selected and the following inequality (also known as sufficient decrease condition) evaluated
+  $$
+  f(\xx_t - \gamma_t \nabla f(\xx_t)) \leq f(\xx_t) - \frac{\gamma_t}{2}\|\nabla f(\xx_t)\|^2~.
+  $$
+  If this inequality is verified, the current step size is kept. If not, the step size is divided by 2 (or any number > 1) and the sufficient decrease condition evaluated until it is verified.
+</p>
+<p>The Gradient Descent algorithm with backtracking line search then becomes</p>
+<p class="framed">\begin{align}
+     &amp;\textbf{Input}: \text{initial guess $\xx_0$, step size $\gamma > 0$}\nonumber\\
+     &amp; \textbf{For }t=0, 1, \ldots \textbf{ do } \\
+     &amp;\quad \textbf{Initial step size estimate }\gamma_t\\
+     &amp; \quad\textbf{While}(true) \textbf{ do }\\
+     &amp;\quad\quad \textbf{If } f(\xx_t - \gamma_t \nabla f(\xx_t)) \leq f(\xx_t) - \frac{\gamma_t}{2}\|\nabla f(\xx_t)\|^2\\
+     &amp;\quad\quad\quad \textbf{break}\\
+     &amp;\quad\quad\textbf{Else }: \gamma_t = \gamma_t / 2\\
+     &amp;\quad\textbf{End While}\\
+    &amp;\quad\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f(\xx_t)\\
+    &amp;\textbf{end For loop}\\
+    &amp; \textbf{return } \xx_t
+    \end{align}
+    </p>
+
+
+<p>The following examples show the convergence of gradient descent with the aforementioned backtracking line search strategy for the step size.</p>
+
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana4" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha4" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+  </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+    On a well-conditioned quadratic function, the gradient descent converges on few iterations to the optimum. Adding the backtracking line search strategy for the step size does not change much in this case.
+  </figcaption>
+</figure>
+
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana5" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha5" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+  </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+    In this example we can clearly see the effect of the backtracking line search strategy: once the algorithm in a region of low curvature, it can take larger step sizes. The final result is a much improved convergence compared to the fixed step-size equivalent.
+  </figcaption>
+</figure>
+
+
+<figure style = "position:relative; width:984px; height:400px;">
+<div id="banana6" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+<div id="sliderAlpha5" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+</div>
+<figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 300px; top: 320px;">
+  The backtracking line search also improves convergence on non-convex problems.
+</figcaption>
+
+</figure>
+
+
+
+<script src="assets/lib/contour_plot.js"></script>
+<script src="assets/iterates.js"></script>
+<script>
+
+// Render Foreground
+var iterControl = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescentLS, true, true, 300)
+                  .alpha(0.1)
+                  .beta(0)
+                  (d3.select("#banana4").style("position","relative"))
+
+// var iterChange = iterControl.control
+// var getw0 = iterControl.w0
+// 
+// var StepRange = d3.scaleLinear().domain([0,100]).range([0,1.00])
+// var MomentumRange = d3.scaleLinear().domain([0,100]).range([0,0.98])
+// 
+// var update = function (i,j) { iterChange(i, 0, getw0()) }
+// 
+// var slidera = sliderGen([230, 40])
+//             .ticks([0,0.5, 1.0])
+//             .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
+//             .change( function (i) {
+//               d3.select("#sliderAlpha").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+//               iterChange(getalpha(), getbeta(), getw0() )
+//             } )
+//             .startxval(0.2)
+//             .cRadius(7)
+//             .shifty(-12)
+//             .margins(20,20)  
+// var getalpha = slidera( d3.select("#sliderAlpha")).xval
+// var getbeta = function() {return 0;}
+// // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+// 
+// iterChange(getalpha(), getbeta(), getw0() )
+
+// Render Foreground
+var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescentLS, true, true, 300)
+                  .alpha(0.003)
+                  .beta(0)
+                  (d3.select("#banana5").style("position","relative"))
+
+// var iterChange2 = iterControl2.control
+// var getw02 = iterControl2.w0
+// 
+// var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
+// 
+// var slidera2 = sliderGen([230, 40])
+//             .ticks([0,0.01,0.02])
+//             .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
+//             .change( function (i) {
+//               d3.select("#sliderAlpha2").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+//               iterChange2(getalpha2(), getbeta2(), getw02() )
+//             } )
+//             .startxval(0.003)
+//             .cRadius(7)
+//             .shifty(-12)
+//             .margins(20,20)
+// 
+// var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
+// var getbeta2 = function() {return 0;}
+// // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+// 
+// iterChange2(getalpha2(), getbeta2(), getw02() )
+
+
+// Render Foreground
+var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runGradientDescentLS, true, true, 300)
+                  .alpha(0.003)
+                  .beta(0)
+                  (d3.select("#banana6").style("position","relative"))
+
+// var iterChange3 = iterControl3.control
+// var getw03 = iterControl3.w0
+// 
+// var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
+// 
+// var slidera3 = sliderGen([230, 40])
+//             .ticks([0,0.01,0.02])
+//             .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
+//             .change( function (i) {
+//               d3.select("#sliderAlpha3").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+//               iterChange3(getalpha3(), getbeta3(), getw03() )
+//             } )
+//             .startxval(0.003)
+//             .cRadius(7)
+//             .shifty(-12)
+//             .margins(20,20)
+// 
+// var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
+// var getbeta3 = function() {return 0;}
+// // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+// 
+// iterChange3(getalpha3(), getbeta3(), getw03() )
+
+</script>
+
+
+<h2>Convergence of Gradient Descent</h2>
+  <p>
+    Gradient descent converges under very mild assumptions. For example, it is possible to prove a convergence rate with the only a smoothness assumption (not even convexity). We will assume $f$ is differentiable and its gradient is $L$-Lipschitz.
+  </p>
+  <p>As mentioned in the introduction, a function that is differentiable with $L$-Lipschitz gradient verifies the following inequality for all $\xx, \yy$ in the domain
+    \begin{equation}
+    f(\yy) \leq f(\xx) + \langle \nabla f(\xx), \yy - \xx\rangle + \frac{L}{2}\|\xx - \yy\|^2
+    \end{equation}
+  </p>
+
+<p>
+  If we apply the previous inequality to $\xx = \xx_t, \yy=\xx_{t+1}, \gamma=\frac{1}{L}$ we obtain
+\begin{align}
+f(\xx_{t+1}) \leq f(\xx_t) - \frac{1}{2 L}\|\nabla f(\xx_t)\|^2
+\end{align}
+Let us sum upo the inequalities for $t=0, \ldots, T$. We obtain
+\begin{equation}
+\frac{1}{2L}\sum_{t=0}^T \|\nabla f(\xx_t)\|^2 \leq f(\xx_0) - f(\xx_{T+1}) \leq f(\xx_0) - f^*~,
+\end{equation}
+where $f^*$ is the optimal value of the problem. A simple consequence of this is that $\|\nabla f(\xx_t)\| \to 0$ as $t \to \infty$. However, we can also say something about the <i>convergence rate</i>. Indeed, let
+\begin{equation}
+g^*_T = \min_{0 \leq t \leq T} \|\nabla f(\xx_t)\|.
+\end{equation}
+ Then, by the previous inequality we have
+ \begin{equation}
+ g^*_T \leq \frac{L (f(\xx_0) - f(\xx^*))}{\sqrt{T+1}}
+ \end{equation}
+</p>
+
+<!-- <h3>Improved convergence with convexity</h3>
+<p>TODO</p> -->
+</dt-article>
+
+
+<dt-appendix class="centered">
+</dt-appendix> 
+
+<script type="text/bibliography">
+@article{cauchy1847methode,
+  title={M{\'e}thode g{\'e}n{\'e}rale pour la r{\'e}solution des systemes d’{\'e}quations simultan{\'e}es},
+  author={Cauchy, Augustin},
+  journal={
+    Comptes rendus hebdomadaires des séances de l'Académie des sciences},
+  url={http://gallica.bnf.fr/ark:/12148/bpt6k2982c.image.f540.pagination.langEN},
+  year={1847}
+}
+@article{lemarechal2012cauchy,
+  title={Cauchy and the gradient method},
+  author={Lemar{\'e}chal, Claude},
+  journal={Doc Math Extra},
+  year={2012},
+  url={https://www.math.uni-bielefeld.de/documenta/vol-ismp/40_lemarechal-claude.pdf}
+}
+
+</script>
+
+
+
+</script>
