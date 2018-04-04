@@ -198,15 +198,26 @@
   \end{equation}</p>
   <p>when $f$ is twice differentiable.</p>
 
+<h3>Behave like a Hessian</h3>
+<p><b>Key idea</b>. As a byproduct of the optimization, we observe many gradients. Can we use these gradients to iteratively construct an estimate of the Hessian? </p>
 <p>
-In this method the direction $\pp_t$ at stage $t$ is given by the solution of the analogue of the Newton equation
+In this method we consider at each iteration the following surrogate function
 \begin{equation}
-\HH_t \pp_t = -\nabla f(\xx_t)~,
+Q_t(\xx) = c_t +  \boldsymbol{g}_t^T(\xx - \xx_t)  + \frac{1}{2 \gamma}(\xx - \xx_t)^T \boldsymbol{H}_t (\xx - \xx_t)~.
 \end{equation}
+where in this case $\HH_t$ is an <b>approximation</b> to the Hessian matrix, which is updated iteratively at each stage, and  $\nabla f(\xx_t)$ is the gradient of the function evaluated at $\xx_t$.
+</p>
 
-where $\HH_t$ is an approximation to the Hessian matrix, which is updated iteratively at each stage, and  $\nabla f(\xx_t)$ is the gradient of the function evaluated at $\xx_t$.
+<p>A reasonable thing to ask to this surrogate is that its gradient coincides with $f$ at the two last iterates $\xx_{t+1}$ and $\xx_{t}$:
+\begin{align}
+\nabla Q_{t+1}(\xx_{t+1}) &amp;= \nabla f(\xx_{t+1})\\
+\nabla Q_{t+1}(\xx_{t}) &amp;= \nabla f(\xx_{t})\\
+&amp; \implies \nabla Q_{t+1}(\xx_{t+1}) - \nabla Q_{t+1}(\xx_{t}) = \nabla f(\xx_{t+1}) - \nabla f(\xx_{t})
+\end{align}
+ </p>
 
-The quasi-Newton condition imposed on the update of $\HH_t$ is:
+<p>
+By the definition of $Q_t$ we obtain the following condition  on $\HH_{t+1}$:
 \begin{equation}
 \HH_{t+1} (\xx_{t+1}-\xx_t ) = \nabla f(\xx_{t+1}) - \nabla f(\xx_t ).
 \end{equation}
@@ -231,12 +242,13 @@ In order to maintain the symmetry and positive definitiveness of $\HH_{t+1}$, th
     </ul>
 </p>
 <p>
-The first step of the algorithm is carried out using the inverse of the matrix $\HH_t$, which can be obtained efficiently by applying the Sherman–Morrison formula to the step 5 of the algorithm, giving
+In a practical implementation of the algorithm we will maintain also the  inverse of the matrix $\HH_t$, which can be obtained efficiently by applying the Sherman–Morrison formula to the step 5 of the algorithm, giving
 
 \begin{equation}
 B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I - \frac{y_k s_k^T}{y_k^T s_k} \right) + \frac{s_k s_k^T}{y_k^T s_k}.
 \end{equation}
 </p>
+<p><b>The result is a method that combines the low-cost of gradient descent with the favorable convergence properties of Newton's method. </b> </p>
 
 
 <h2>Examples</h2>
@@ -256,7 +268,7 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
     <div id="sliderAlpha2" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
     </div>
     <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 140px; top: 320px;">
-      On an ill-conditioned problem, the BFGS algorithm quickly builds a good estimator of the Hessian, and contrary to gradient descent is able to converge very fast towards the optimum. 
+      On an ill-conditioned problem, the BFGS algorithm quickly builds a good estimator of the Hessian, and contrary to gradient descent is able to converge very fast towards the optimum. Note that this, just like the Newton method (and unlike gradient descent), BFGS does not seem to be affected (much) by a bad conditioning of the problem.
     </figcaption>
 
   </figure>

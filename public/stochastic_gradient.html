@@ -171,7 +171,7 @@
     Stochastic Gradient Method (also known as stochastic gradient descent or SGD) can be used to solve optimization problems in which the objective function is of the form $f(\xx) = \mathbb{E}[f_i(\xx)]$, where the expectation is taken with respect to $i$. The most comnmon case is when $i$ can take a finite number of values, in which the problem becomes
   </p>
   <p style="background-color: #D2E4FC; padding: 1px; border-radius: 8px;">\begin{equation}\label{eq:fw_objective}
-    \minimize_{\boldsymbol{x} \in \mathcal{X}} \frac{1}{n} \sum_{i=1}^n f_i(\boldsymbol{x}) ~,
+    \minimize_{\boldsymbol{x} \in \RR^p} \frac{1}{n} \sum_{i=1}^n f_i(\boldsymbol{x}) ~,
   \end{equation}</p>
   <p>This class of problems arises often in machine learning, where the $f_i$ is the cost of mis-classifying each element in the dataset.
   </p>
@@ -184,7 +184,7 @@
        &amp;\textbf{Input}: \text{initial guess $\xx_0$, step size sequence $\gamma_t > 0$}\nonumber\\
        &amp; \textbf{For }t=0, 1, \ldots \textbf{ do } \\
        &amp;\quad\text{Choose $i \in \{1, 2, \ldots, n \}$ uniformly at random} \\
-      &amp;\quad\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f(\xx_t)~.\label{eq:update_rule}\\
+      &amp;\quad\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f_i(\xx_t)~.\label{eq:update_rule}\\
       &amp;\textbf{end For loop}\\
       &amp; \textbf{return } \xx_t
       \end{align}
@@ -208,6 +208,12 @@
   </p>
 
 <h2>Examples</h2>
+<p>A least squares problem can be written in the form acceptable by SGD since 
+\begin{equation}
+\frac{1}{n}\|\boldsymbol{A} \xx - \boldsymbol{b}\|^2 = \frac{1}{n} \sum_{i=1}^n (\boldsymbol{A}_i^T \xx - \boldsymbol{b}_i)^2 
+\end{equation}
+where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
+</p>
 <p>Stochastic Gradient with constant step-size</p>
   <figure style = "position:relative; width:984px; height:400px;">
     <div id="banana" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
@@ -215,7 +221,7 @@
       <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.2</text>
     </div>
     <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
-      Stochastic Gradient with constant step size converges quickly to a neighborbood of the optimum, but then bounces around.
+      Stochastic Gradient with constant step size converges quickly to a neighborhood of the optimum, but then bounces around.
     </figcaption>
   </figure>
 
@@ -237,6 +243,9 @@
   <div id="sliderAlpha3" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
     <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.02</text>
   </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
+    Stochastic Gradient with decreasing step sizes is quite robust to the choice of step size. On one hand there is really no good way to set the step size (e.g., no equivalent of line search for Gradient Descent) but on the other hand it converges for a wide range of step sizes.
+  </figcaption>
 
 </figure>
 
