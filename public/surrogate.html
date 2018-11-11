@@ -183,25 +183,27 @@
 </ul>
 
 <h3>Linear surrogates</h3>
-<p>
+<p>The simplest class of surrogates we can think of are linear surrogates, that is, functions of the form
 $$
-Q_t(\xx) = c_t + (\xx - \xx_t)^T \boldsymbol{b}_t
+Q_t(\xx) = (\xx - \xx_t)^T \boldsymbol{b}_t + c_t~.
 $$
 </p>
-<p>In general unbounded -- although we will find some uses for it in constrained optimization</p>
+<p>While simple, they are general unbounded, making thir minimization problematic -- although they do have some uses in constrained optimization</p>
 
 <h3>Quadratic surrogates</h3>
-<p>
+<p>Slightly more complex are quadratic functions. These are of the form
 $$
-Q_t(\xx) = c_t +  \boldsymbol{b}_t^T (\xx - \xx_t)  + (\xx - \xx_t)^T \boldsymbol{A} (\xx - \xx_t)
+Q_t(\xx) = (\xx - \xx_t)^T \boldsymbol{A} (\xx - \xx_t) + \boldsymbol{b}_t^T (\xx - \xx_t) + c_t.
 $$
 </p>
 <p>Yes! Many examples: Gradient descent, Newton, etc.</p>
+
+<h2>Next: <a href="gradient_descent.html">Gradient Descent</a></h2>
 </dt-article>
 
 
 <dt-appendix class="centered">
-</dt-appendix> 
+</dt-appendix>
 
 <script type="text/bibliography">
 @article{lange2000optimization,
