@@ -166,15 +166,13 @@
   $$
 
 
-  <h1>Introduction to optimization algorithms</h1>
+  <h1>Knowing your problem</h1>
   <dt-byline class="l-page"></dt-byline>
 
 
   <h2>Mathematical Optimization</h2>
   <p><i>Mathematical Optimization is the branch of mathematics that aims to solve the problem of finding the elements that maximize or minimize a given function</i>. Its importance stems from the fact that many problems in engineering and machine learning can be cast as mathematical optimization problems. For example, in a spam detection filter we might aim to find the system that minimizes the number of misclassified emails. Similarly, when an engineer designs a pipe, we will seek for the design that minimizes cost while respecting some safety constraints. Both are examples that can be modeled as optimization problems.
   </p>
-
-  <p><b>Note</b>: Optimization is a broad field. This lecture will be exclusively about <i>gradient-based</i> optimization methods. </p>
 
   <!-- <p>The birth of modern mathematical optimization is dated to the military services early in World War II. Other names for mathematical optimization mainly used during this initial period include "mathematical programming" and "operations research". Key figures of the initial period are Soviet economist Leonid Kantorovich<dt-cite key="kantorovich1940new"></dt-cite> and George Dantzig<dt-cite key="dantzig1951maximization"></dt-cite>. </p>
 
@@ -212,28 +210,152 @@ Since the <i>domain</i> of the objective function is a 2-dimensional space, we c
   <figure style = "position:relative; width:984px; height:300px;">
     <div id="banana" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
   </figure>
-  <p>A naive approach is to evaluate the function at a discrete grid and then just select the value that minimize the cost function. However, this approach is very inefficient: the number of function evaluation it requires is exponential in the number of dimensions.
-  </p>
-
-  <p>Let $n$ be the grid size in each dimension. Then this approach requires
-$
-n^d
-$
-function evaluations. Since we aim to solve problems with large $d$ (in the thousands if not millions), we need more efficient methods.</p>
-
-  <!-- <p>A more efficient approach instead is to start from an initial guess and iteratively refine the initial guess. The information that to which we have access is the objective function value and its gradient
+  <p>A naive approach is to evaluate the function at a discrete grid and then just select the value that minimize the cost function. However, this approach is very inefficient: the number of function evaluation it requires is exponential in the number of dimensions.</p>
+  <p>A more efficient approach instead is to start from an initial guess and iteratively refine the initial guess. The information that to which we have access is the objective function value and its gradient
   </p>
   <figure style = "position:relative; width:984px; height:300px;">
     <div id="banana2" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
   </figure>
   <p>
   Like a hiker on a foggy day, we seek to reach the bottom of the valley while relying only on local information such as the value and steep (gradient) of the objective function at the current iterate.
-  </p> -->
+  </p>
 
 
 
+<h2>Knowing your problem</h2>
+<p>Not all optimization problems are equal. Knowing your problem enables you
+to choose the right tool.</p>
+<div class="topic">
+<h3>Dimensionality of the problem</h3>
+<p>The scale of an optimization problem is pretty much set by the
+<em>dimensionality of the problem</em>, i.e. the number of scalar variables
+on which the search is performed.</p>
+</div>
+<div class="section" id="convex-versus-non-convex-optimization">
+<h3>Convex versus non-convex optimization</h3>
+<table class="docutils" border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="convex_1d_1" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_convex_001.png"></td>
+<td><img alt="convex_1d_2" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_convex_002.png"></td>
+</tr>
+<tr class="row-even"><td><p class="first"><strong>A convex function</strong>:</p>
+<ul class="last simple">
+<li><cite>f</cite> is above all its tangents.</li>
+<li>equivalently, for two point A, B, f(C) lies below the segment
+[f(A), f(B])], if A &lt; C &lt; B</li>
+</ul>
+</td>
+<td><strong>A non-convex function</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimizing convex functions is typically easier than optimizing non-convex functions.</strong> Convex functions have the nice property that the gradient vanishes only at a global optimum</p>
+</div>
+<div class="section" id="smooth-and-non-smooth-problems">
+<h3>Smooth and non-smooth problems</h3>
+<table class="docutils" border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="smooth_1d_1" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_smooth_001.png"></td>
+<td><img alt="smooth_1d_2" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_smooth_002.png"></td>
+</tr>
+<tr class="row-even"><td><p class="first"><strong>A smooth function</strong>:</p>
+<p class="last">The gradient is defined everywhere, and is a continuous function</p>
+</td>
+<td><strong>A non-smooth function</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimizing smooth functions is easier</strong>
+(true in the context of general function, otherwise
+<a class="reference external" href="http://en.wikipedia.org/wiki/Linear_programming">Linear Programming</a>
+is an example of methods which deal very efficiently with
+piece-wise linear functions).</p>
+<p>Smooth functions have the crucial property that at each point admit a quadratic upper bound. I.e., there exists $0 \leq L < \infty$ such that the following inequality is verified for all $\xx, \yy$ in the domain:
+\begin{equation}
+f(\yy) \leq f(\xx) + \langle \nabla f(\xx), \yy - \xx\rangle + \frac{L}{2}\|\xx - \yy\|^2
+\end{equation}
+</p>
+</div>
+<div class="section" id="noisy-versus-exact-cost-functions">
+<h3>Noisy versus exact cost functions</h3>
+<table class="docutils" border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Noisy (blue) and non-noisy (green) functions</td>
+<td><img alt="noisy" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_noisy_001.png"></td>
+</tr>
+</tbody>
+</table>
+<div class="topic">
+<p>Many optimization methods rely on gradients of the objective function.
+If the gradient function is not given, they are computed numerically,
+which induces errors. In such situation, even if the objective
+function is not noisy, a gradient-based optimization may be a noisy
+optimization.</p>
+</div>
+</div>
+<div class="section" id="constraints">
+<h3>Constraints</h3>
+<table class="docutils" border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><p class="first">Optimizations under constraints</p>
+<p>Here:</p>
+<p><img class="math" src="https://www.scipy-lectures.org/_images/math/b270dcff9524408f385d632b77523aed51e9f444.png" alt="-1 < x_1 < 1"></p>
+<p class="last"><img class="math" src="https://www.scipy-lectures.org/_images/math/b109b5cb82fcb53f0a1c2d3855cc5340c4598139.png" alt="-1 < x_2 < 1"></p>
+</td>
+<td><a class="reference external" href="auto_examples/plot_constraints.html"><img alt="constraints" src="https://www.scipy-lectures.org/_images/sphx_glr_plot_constraints_001.png"></a></td>
+</tr>
+</tbody>
+</table>
+</div>
 
-<h2>Next: <a href="surrogate.html">Surrogate Optimization</a></h2>
+<div class="section" id="condition">
+<h3>Conditioning</h3>
+<p>
+  The speed of convergence of most optimization depend on the <i>conditioning</i> of our problem. A well conditioned problem is one in which the curvature is similar among any direction. A badly conditioned problem is one in which the level curves
+</p>
+<table class="docutils" border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>
+  Well conditioned problem
+  <img src="assets/images/levelsets1.png" alt="">
+</td>
+<td>
+  Badly conditioned problem
+  <img src="assets/images/levelsets2.png" alt="">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>Recommended Readings</h2>
+<p>
+At the undergrade level I recommend the book Convex Optimization Algorithms by Dimitry Bertsekas<dt-cite key="bertsekas2015convex"></dt-cite>.
+</p>
+<p>At a more advanced level, the book by Nesterov<dt-cite key="nesterov2013introductory"></dt-cite> is also an excelleng resource.</p>
+
+
+<h2>Next: <a href="surrogate.html">Surrogate Minimization</a></h2>
 <h2>Previous: <a href="index.html">Table of contents</a></h2>
 <script src="assets/lib/contour_plot.js"></script>
 <script src="assets/iterates.js"></script>

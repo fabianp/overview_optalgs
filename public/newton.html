@@ -158,6 +158,14 @@
 </svg>
 
 <dt-article class="centered">
+  <div style="display: none">
+  $$
+  \DeclareMathOperator*{\argmin}{{arg\,min}}
+  \DeclareMathOperator*{\argmax}{{arg\,max}}
+  \DeclareMathOperator*{\minimize}{{minimize}}
+  $$
+  </div>
+
   <h1>Newton&#8217;s method</h1>
   <dt-byline class="l-page"></dt-byline>
   <p>The Newton method is an iterative method to solve the following unconstrained optimization problem</p>
@@ -167,7 +175,7 @@
   <p>when $f$ is twice differentiable.</p>
 
   <p>
-    In Newton's method, we approximate the objective with a quadratic surrogate of the form 
+    In Newton's method, we approximate the objective with a quadratic surrogate of the form
     \begin{equation}
     Q_t(\xx) = c_t +  \boldsymbol{g}_t^T(\xx - \xx_t)  + \frac{1}{2 \gamma}(\xx - \xx_t)^T \boldsymbol{H}_t (\xx - \xx_t)~.
     \end{equation}
@@ -244,7 +252,7 @@
     <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 1</text>
   </div>
   <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
-    When the Hessian is close to singular there might be some numerical instabilities. 
+    When the Hessian is close to singular there might be some numerical instabilities.
   </figcaption>
 
 </figure>
@@ -260,15 +268,15 @@
                     .alpha(1.)
                     .beta(0)
                     (d3.select("#banana").style("position","relative"))
-  
+
   var iterChange = iterControl.control
   var getw0 = iterControl.w0
-  
+
   var StepRange = d3.scaleLinear().domain([0,100]).range([0,1.00])
   var MomentumRange = d3.scaleLinear().domain([0,100]).range([0,0.98])
-  
+
   var update = function (i,j) { iterChange(i, 0, getw0()) }
-  
+
   var slidera = sliderGen([230, 40])
               .ticks([0, 1.0, 2.0])
               .ticktitles( function(d,i) { return ["0", "1", "2"][i]})
@@ -279,24 +287,24 @@
               .startxval(1)
               .cRadius(7)
               .shifty(-12)
-              .margins(20,20)  
+              .margins(20,20)
   var getalpha = slidera( d3.select("#sliderAlpha")).xval
   var getbeta = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  
+
   iterChange(getalpha(), getbeta(), getw0() )
-  
+
   // Render Foreground
   var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runNewton, true, true, 20)
                     .alpha(1)
                     .beta(0)
                     (d3.select("#banana2").style("position","relative"))
-  
+
   var iterChange2 = iterControl2.control
   var getw02 = iterControl2.w0
-  
+
   var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-  
+
   var slidera2 = sliderGen([230, 40])
               .ticks([0,1,2])
               .ticktitles( function(d,i) { return ["0", "1", "2"][i]})
@@ -308,25 +316,25 @@
               .cRadius(7)
               .shifty(-12)
               .margins(20,20)
-  
+
   var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
   var getbeta2 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  
+
   iterChange2(getalpha2(), getbeta2(), getw02() )
-  
-  
+
+
   // Render Foreground
   var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runNewton, true, true, 100)
                     .alpha(1)
                     .beta(0)
                     (d3.select("#banana3").style("position","relative"))
-  
+
   var iterChange3 = iterControl3.control
   var getw03 = iterControl3.w0
-  
+
   var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-  
+
   var slidera3 = sliderGen([230, 40])
               .ticks([0,1,2])
               .ticktitles( function(d,i) { return ["0", "1", "2"][i]})
@@ -338,11 +346,11 @@
               .cRadius(7)
               .shifty(-12)
               .margins(20,20)
-  
+
   var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
   var getbeta3 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  
+
   iterChange3(getalpha3(), getbeta3(), getw03() )
 
   </script>

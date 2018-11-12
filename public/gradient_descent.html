@@ -24,8 +24,6 @@
         equationNumbers: { autoNumber: "AMS" },
         Macros: {
           RR: "{\\mathbb{R}}",
-          argmin: "{\\operatorname*{\\mathrm{arg\\,min}}}",
-          minimize: "{\\operatorname*{\\mathrm{minimize}}}",
           bold: ["{\\bf #1}",1],
           xx: "{\\boldsymbol x}",
           uu: "{\\boldsymbol u}",
@@ -36,7 +34,6 @@
     "HTML-CSS": { availableFonts: ["TeX"] }
   });
 </script>
-
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
@@ -157,19 +154,26 @@
 </svg>
 
 <dt-article class="centered">
+  <div style="display: none">
+  $$
+  \DeclareMathOperator*{\argmin}{{arg\,min}}
+  \DeclareMathOperator*{\argmax}{{arg\,max}}
+  \DeclareMathOperator*{\minimize}{{minimize}}
+  $$
+  </div>
 
   <h1>Gradient Descent</h1>
   <dt-byline class="l-page"></dt-byline>
-  <p>The first method that we will describe is one of the oldest<dt-cite key="cauchy1847methode,lemarechal2012cauchy"></dt-cite> methods in optimization: gradient descent, also known as steepest descent </p>
-  
-  <figure>
-    <img style="margin-left:100px;  width: 200px" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Augustin-Louis_Cauchy_1901.jpg" alt="">  
-   <figcaption id="expander" style="position:absolute; left:370px; top:10px; width:200px">Augustin-Louis Cauchy was a French mathematician and physicist who made pioneering contributions to mathematical analysis. Motivated by the need to solve "large" quadratic problems (6 variables) that arise in Astronomy, he invented the method of gradient descent. Today, this method is used to comfortably solve a problems with thousands of variables.</figcaption>  
-  </figure>
-  
+  <p>The first method that we will describe predates the modern field of optimization, and was originally proposed as a method to solve systems of equations<dt-cite key="cauchy1847methode,lemarechal2012cauchy"></dt-cite>.</p>
 
-<hr>
+  <figure>
+    <img style="margin-left:100px;  width: 200px" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Augustin-Louis_Cauchy_1901.jpg" alt="">
+   <figcaption id="expander" style="position:absolute; left:370px; top:10px; width:200px">Augustin-Louis Cauchy was a French mathematician and physicist who made pioneering contributions to mathematical analysis. Motivated by the need to solve "large" quadratic problems (6 variables) that arise in Astronomy, he invented the method of gradient descent. Today, this method is used to comfortably solve a problems with thousands of variables.</figcaption>
+  </figure>
+
 <h2>Motivation</h2>
+<p></p>
+
 <p>Gradient Descent is an iterative method to solve the following unconstrained optimization problem</p>
 <p style="background-color: #D2E4FC; padding: 1px; border-radius: 8px;">\begin{equation}\label{eq:fw_objective}
   \minimize_{\boldsymbol{x} \in \RR^p} f(\boldsymbol{x}) ~,
@@ -197,7 +201,7 @@
   \xx_{t+1} = \argmin_{\xx} Q_t(\xx) = \xx_t - \gamma \nabla f(\xx_t)
   \end{equation}
    </p>
-   
+
    <h2>The Gradient Descent Algorithm</h2>
    <p>We can write the full gradient descent algorithm as follows. The algorithm only has one free parameter: the step size $\gamma$.</p>
    <p class="framed">\begin{align}
@@ -208,7 +212,7 @@
        &amp; \textbf{return } \xx_t
        \end{align}
        </p>
-   
+
    <h2>Examples</h2>
   <p>We examine the convergence of gradient descent on three examples: a well-conditioned quadratic, an ill-conditioned quadratic and a non-convex function. </p>
   <figure style = "position:relative; width:984px; height:400px;">
@@ -273,7 +277,7 @@
               .startxval(0.2)
               .cRadius(7)
               .shifty(-12)
-              .margins(20,20)  
+              .margins(20,20)
   var getalpha = slidera( d3.select("#sliderAlpha")).xval
   var getbeta = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
@@ -302,7 +306,7 @@
               .cRadius(7)
               .shifty(-12)
               .margins(20,20)
-  
+
   var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
   var getbeta2 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
@@ -332,7 +336,7 @@
               .cRadius(7)
               .shifty(-12)
               .margins(20,20)
-  
+
   var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
   var getbeta3 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
@@ -412,12 +416,12 @@ var iterControl = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.
 
 // var iterChange = iterControl.control
 // var getw0 = iterControl.w0
-// 
+//
 // var StepRange = d3.scaleLinear().domain([0,100]).range([0,1.00])
 // var MomentumRange = d3.scaleLinear().domain([0,100]).range([0,0.98])
-// 
+//
 // var update = function (i,j) { iterChange(i, 0, getw0()) }
-// 
+//
 // var slidera = sliderGen([230, 40])
 //             .ticks([0,0.5, 1.0])
 //             .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
@@ -428,11 +432,11 @@ var iterControl = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.
 //             .startxval(0.2)
 //             .cRadius(7)
 //             .shifty(-12)
-//             .margins(20,20)  
+//             .margins(20,20)
 // var getalpha = slidera( d3.select("#sliderAlpha")).xval
 // var getbeta = function() {return 0;}
 // // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-// 
+//
 // iterChange(getalpha(), getbeta(), getw0() )
 
 // Render Foreground
@@ -443,9 +447,9 @@ var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], 
 
 // var iterChange2 = iterControl2.control
 // var getw02 = iterControl2.w0
-// 
+//
 // var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-// 
+//
 // var slidera2 = sliderGen([230, 40])
 //             .ticks([0,0.01,0.02])
 //             .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
@@ -457,11 +461,11 @@ var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], 
 //             .cRadius(7)
 //             .shifty(-12)
 //             .margins(20,20)
-// 
+//
 // var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
 // var getbeta2 = function() {return 0;}
 // // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-// 
+//
 // iterChange2(getalpha2(), getbeta2(), getw02() )
 
 
@@ -473,9 +477,9 @@ var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.
 
 // var iterChange3 = iterControl3.control
 // var getw03 = iterControl3.w0
-// 
+//
 // var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-// 
+//
 // var slidera3 = sliderGen([230, 40])
 //             .ticks([0,0.01,0.02])
 //             .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
@@ -487,11 +491,11 @@ var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.
 //             .cRadius(7)
 //             .shifty(-12)
 //             .margins(20,20)
-// 
+//
 // var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
 // var getbeta3 = function() {return 0;}
 // // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-// 
+//
 // iterChange3(getalpha3(), getbeta3(), getw03() )
 
 </script>
@@ -528,11 +532,14 @@ g^*_T = \min_{0 \leq t \leq T} \|\nabla f(\xx_t)\|.
 
 <!-- <h3>Improved convergence with convexity</h3>
 <p>TODO</p> -->
+
+<h2>Next: <a href="newton.html">Newton's method</a></h2>
+<h2>Previous:  <a href="introduction.html">Introduction</a></h2>
 </dt-article>
 
 
 <dt-appendix class="centered">
-</dt-appendix> 
+</dt-appendix>
 
 <script type="text/bibliography">
 @article{cauchy1847methode,

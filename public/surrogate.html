@@ -27,8 +27,6 @@
         equationNumbers: { autoNumber: "AMS" },
         Macros: {
           RR: "{\\mathbb{R}}",
-          argmin: "{\\mathop{\\mathrm{arg\\,min}}}",
-          minimize: "{\\mathop{\\mathrm{minimize}}}",
           bold: ["{\\bf #1}",1],
           xx: "{\\boldsymbol x}",
           uu: "{\\boldsymbol u}",
@@ -161,17 +159,22 @@
 </svg>
 
 <dt-article class="centered">
+  $$
+  \DeclareMathOperator*{\argmin}{{arg\,min}}
+  \DeclareMathOperator*{\argmax}{{arg\,max}}
+  \DeclareMathOperator*{\minimize}{{minimize}}
+  $$
 
-  <h1>A unifying principle: surrogate minimization</h1>
+  <h1>A unifying principle: surrogate optimization</h1>
   <dt-byline class="l-page"></dt-byline>
   <p>We aim to solve an optimization problem of the form
   </p>
   <p style="background-color: #D2E4FC; padding: 1px; border-radius: 8px;">\begin{equation}\label{eq:fw_objective}
-    \minimize_{\boldsymbol{x} \in \mathcal{X}} f(\boldsymbol{x}) ~,
+    \minimize_{\boldsymbol{x} \in \RR^p} f(\boldsymbol{x}) ~.
   \end{equation}</p>
   <p>A key idea is to start at an initial estimate $\xx_0$ and successively minimize an approximating function<dt-cite key="lange2000optimization,mairal2013optimization"></dt-cite> $Q_t(\xx)$:
   \begin{equation}
-    \xx_{t+1} = \argmin_{\xx \in \mathcal{X}} Q_t(\xx)~.
+    \xx_{t+1} = \argmin_{\xx \in \RR^p} Q_t(\xx)~.
   \end{equation}
 </p>
 <p>We will call $Q_t$ a <i>surrogate</i> function. It is also known as merit function. </p>
@@ -199,6 +202,7 @@ $$
 <p>Yes! Many examples: Gradient descent, Newton, etc.</p>
 
 <h2>Next: <a href="gradient_descent.html">Gradient Descent</a></h2>
+<h2>Previous: <a href="introduction.html">Introduction</a></h2>
 </dt-article>
 
 
