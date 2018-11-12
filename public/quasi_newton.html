@@ -212,15 +212,11 @@ where in this case $\HH_t$ is an <b>approximation</b> to the Hessian matrix, whi
 \begin{align}
 \nabla Q_{t+1}(\xx_{t+1}) &amp;= \nabla f(\xx_{t+1})\\
 \nabla Q_{t+1}(\xx_{t}) &amp;= \nabla f(\xx_{t})\\
-&amp; \implies \nabla Q_{t+1}(\xx_{t+1}) - \nabla Q_{t+1}(\xx_{t}) = \nabla f(\xx_{t+1}) - \nabla f(\xx_{t})
+&amp; \implies \HH_{t+1} (\xx_{t+1}-\xx_t ) = \nabla f(\xx_{t+1}) - \nabla f(\xx_t ).
 \end{align}
  </p>
 
 <p>
-By the definition of $Q_t$ we obtain the following condition  on $\HH_{t+1}$:
-\begin{equation}
-\HH_{t+1} (\xx_{t+1}-\xx_t ) = \nabla f(\xx_{t+1}) - \nabla f(\xx_t ).
-\end{equation}
 Let $\mathbf{y}_t = \nabla f(\xx_{t+1}) - \nabla f(\xx_t)$ and $\mathbf{s}_t = \xx_{t+1}-\xx_t$, then $\HH_{t+1}$ satisfies $\HH_{t+1} \mathbf{s}_t = \mathbf{y}_t $ which is the secant equation. The curvature condition $\mathbf{s}_t^\top \mathbf{y}_t  > 0$ should be satisfied. If the function is not strongly convex, then the condition has to be enforced explicitly.
 
 In order to maintain the symmetry and positive definitiveness of $\HH_{t+1}$, the update form can be chosen as: $\HH_{t+1} = \HH_t + \alpha\mathbf{u}\mathbf{u}^\top + \beta\mathbf{v}\mathbf{v}^\top$. Imposing the secant condition, $\HH_{t+1} \mathbf{s}_t = \mathbf{y}_t $. With this, we get the update equation of $\HH_{t+1}$:

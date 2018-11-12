@@ -290,11 +290,6 @@ on which the search is performed.</p>
 <a class="reference external" href="http://en.wikipedia.org/wiki/Linear_programming">Linear Programming</a>
 is an example of methods which deal very efficiently with
 piece-wise linear functions).</p>
-<p>Smooth functions have the crucial property that at each point admit a quadratic upper bound. I.e., there exists $0 \leq L < \infty$ such that the following inequality is verified for all $\xx, \yy$ in the domain:
-\begin{equation}
-f(\yy) \leq f(\xx) + \langle \nabla f(\xx), \yy - \xx\rangle + \frac{L}{2}\|\xx - \yy\|^2
-\end{equation}
-</p>
 </div>
 <div class="section" id="noisy-versus-exact-cost-functions">
 <h3>Noisy versus exact cost functions</h3>
@@ -310,11 +305,7 @@ f(\yy) \leq f(\xx) + \langle \nabla f(\xx), \yy - \xx\rangle + \frac{L}{2}\|\xx 
 </tbody>
 </table>
 <div class="topic">
-<p>Many optimization methods rely on gradients of the objective function.
-If the gradient function is not given, they are computed numerically,
-which induces errors. In such situation, even if the objective
-function is not noisy, a gradient-based optimization may be a noisy
-optimization.</p>
+<p>In some cases, computing the full objective and gradient is too costly, and we only have access to a <i>noisy</i> estimate of these quantities.</p>
 </div>
 </div>
 <div class="section" id="constraints">
@@ -364,7 +355,9 @@ optimization.</p>
 <p>
 At the undergrade level I recommend the book Convex Optimization Algorithms by Dimitry Bertsekas<dt-cite key="bertsekas2015convex"></dt-cite>.
 </p>
-<p>At a more advanced level, the book by Nesterov<dt-cite key="nesterov2013introductory"></dt-cite> is also an excelleng resource.</p>
+<p>At a more advanced level, the book by Nesterov<dt-cite key="nesterov2013introductory"></dt-cite> is also an excellent resource.</p>
+
+<p>See also the great <a href="https://distill.pub/2017/momentum/">Distill article on momentum</a> from which much of this lecture was heavily inspired. </p>
 
 
 
