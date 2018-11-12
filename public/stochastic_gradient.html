@@ -253,7 +253,7 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
 
 <p>SGD is often augmented with a <i>momentum</i> term, so that the update in \eqref{eq:update_rule} becomes
 $$
-\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f_i(\xx_t) - \underbrace{\beta (\xx_t - \xx_{t-1})}_{\text{momentum}}
+\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f_i(\xx_t) + \underbrace{\beta (\xx_t - \xx_{t-1})}_{\text{momentum}}
 $$
 </p>
 <p>Momentum adds the previous update direction to the gradient. This has two beneficial effects:
@@ -411,7 +411,7 @@ $$
   // Render Foreground
   var iterControl4 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runStochasticGradient, true, true, 300)
                     .alpha(0.003)
-                    .beta(0.2)
+                    .beta(0.9)
                     (d3.select("#banana4").style("position","relative"))
 
   var iterChange4 = iterControl4.control
@@ -432,7 +432,7 @@ $$
               .margins(20,20)
 
   var getalpha4 = slidera4( d3.select("#sliderAlpha4")).xval
-  var getbeta4 = function() {return 0.2;}
+  var getbeta4 = function() {return 0.9;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
 
   iterChange4(getalpha4(), getbeta4(), getw04() )
@@ -442,7 +442,7 @@ $$
   // Render Foreground
   var iterControl5 = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runStochasticGradientDecreasingSteps, true, true, 300)
                     .alpha(0.003)
-                    .beta(0.2)
+                    .beta(0.9)
                     (d3.select("#banana5").style("position","relative"))
 
   var iterChange5 = iterControl5.control
@@ -463,7 +463,7 @@ $$
               .margins(20,20)
 
   var getalpha5 = slidera5( d3.select("#sliderAlpha5")).xval
-  var getbeta5 = function() {return 0.2;}
+  var getbeta5 = function() {return 0.9;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
 
   iterChange5(getalpha5(), getbeta5(), getw05() )
