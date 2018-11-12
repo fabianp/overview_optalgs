@@ -174,7 +174,7 @@
 </p>
   <h1>Quasi-Newton and BFGS</h1>
   <dt-byline class="l-page"></dt-byline>
-  
+
   <p>
     The central issue with Newton's method is that we need to be able to compute the inverse Hessian matrix. For machine learning applications, the dimensionality of the problem can be of the order of thousands or millions. Computing the Hessian or its inverse is often impractical.</p>
 
@@ -182,11 +182,11 @@
   is rarely used in practice to optimize functions corresponding to large problems. Luckily, the above algorithm can still work even if the Hessian is replaced by a good approximation.</p>
 
   <p>In quasi-Newton methods, the Hessian matrix of second derivatives doesn't need to be evaluated directly. Instead, the Hessian matrix is approximated using updates specified by gradient evaluations (or approximate gradient evaluations).</p>
-  
+
   <h2>The BFGS algorithm</h2>
-  
+
   <p>One of the most popular quasi-Newton methods is the BFGS algorithm. The algorithm is named after Charles George Broyden, Roger Fletcher, Donald Goldfarb and David Shanno. <dt-cite key="broyden1970convergence,fletcher1970new,goldfarb1970family,shanno1970conditioning"></dt-cite></p>
-  
+
   <p>
     <img style="width: 80%; margin-left: auto; margin-right: auto; display: block" src="http://aria42.com/images/bfgs.png" alt="">
   </p>
@@ -230,7 +230,7 @@ In order to maintain the symmetry and positive definitiveness of $\HH_{t+1}$, th
 \end{equation}
 
   </p>
-  
+
   <h3>The BFGS algorithm</h3>
   <p>
     <ul class="framed">
@@ -280,7 +280,7 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
   <div id="sliderAlpha3" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
   </div>
   <figcaption id="Bananacaption" style="position:absolute; width: 720px; height: 90px; left: 140px; top: 320px;">
-    Even on an ill-conditioned problem nonconvex problem, the BFGS algorithm also converges extremely fast, with a convergence that is more similar to Newton's method than to gradient descent. 
+    Even on an ill-conditioned problem nonconvex problem, the BFGS algorithm also converges extremely fast, with a convergence that is more similar to Newton's method than to gradient descent.
   </figcaption>
 
 </figure>
@@ -296,15 +296,15 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
                     .alpha(0.003)
                     .beta(0)
                     (d3.select("#banana").style("position","relative"))
-  
+
   var iterChange = iterControl.control
   var getw0 = iterControl.w0
-  
+
   var StepRange = d3.scaleLinear().domain([0,300]).range([0,1.00])
   var MomentumRange = d3.scaleLinear().domain([0,300]).range([0,0.98])
-  
+
   var update = function (i,j) { iterChange(i, 0, getw0()) }
-  
+
   // var slidera = sliderGen([230, 40])
   //             .ticks([0,0.5, 1.0])
   //             .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
@@ -315,24 +315,24 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
   //             .startxval(0.5)
   //             .cRadius(7)
   //             .shifty(-12)
-  //             .margins(20,20)  
+  //             .margins(20,20)
   // var getalpha = slidera( d3.select("#sliderAlpha")).xval
   // var getbeta = function() {return 0;}
   // // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  // 
+  //
   // iterChange(getalpha(), getbeta(), getw0() )
-  
+
   // Render Foreground
   var iterControl2 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runBFGS2, true, true, 300)
                     .alpha(0.003)
                     .beta(0)
                     (d3.select("#banana2").style("position","relative"))
-  
+
   var iterChange2 = iterControl2.control
   var getw02 = iterControl2.w0
-  
+
   var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-  
+
   // var slidera2 = sliderGen([230, 40])
   //             .ticks([0,0.01,0.02])
   //             .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
@@ -344,25 +344,25 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
   //             .cRadius(7)
   //             .shifty(-12)
   //             .margins(20,20)
-  // 
+  //
   // var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
   // var getbeta2 = function() {return 0;}
   // // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  // 
+  //
   // iterChange2(getalpha2(), getbeta2(), getw02() )
-  
-  
+
+
   // Render Foreground
   var iterControl3 = genIterDiagram(bananaf, [1,1/3], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runBFGS2, true, true, 300)
                     .alpha(0.2)
                     .beta(0)
                     (d3.select("#banana3").style("position","relative"))
-  
+
   var iterChange3 = iterControl3.control
   var getw03 = iterControl3.w0
-  
+
   var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
-  
+
   // var slidera3 = sliderGen([230, 40])
   //             .ticks([0,0.05,0.1])
   //             .ticktitles( function(d,i) { return ["0", "0.05", "0.1"][i]})
@@ -374,21 +374,23 @@ B_{k+1}^{-1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k} \right) B_{k}^{-1} \left(I 
   //             .cRadius(7)
   //             .shifty(-12)
   //             .margins(20,20)
-  // 
+  //
   // var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
   // var getbeta3 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
-  
+
   // iterChange3(getalpha3(), getbeta3(), getw03() )
 
   </script>
+
+  <h2>Next: <a href="stochastic_gradient.html">Exploting Structure: The Stochastic Gradient Method.</a></h2>
 
 
 </dt-article>
 
 
 <dt-appendix class="centered">
-</dt-appendix> 
+</dt-appendix>
 
 <script type="text/bibliography">
 @article{broyden1970convergence,
