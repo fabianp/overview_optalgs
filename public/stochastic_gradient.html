@@ -160,11 +160,11 @@
 <dt-article class="centered">
   <h1>The Stochastic Gradient Method</h1>
   <dt-byline class="l-page"></dt-byline>
-  
+
   <p>The Stochastic Gradient Method (SGM)<dt-cite key="robbins1951stochastic"></dt-cite> is one of the most widely-used methods for large-scale optimization and is one of the main methods behind the current AI revolution.</p>
   <figure>
-    <img style="margin-left:100px;  width: 200px" src="https://upload.wikimedia.org/wikipedia/en/7/76/1966-HerbertRobbins.jpg" alt="">  
-   <figcaption id="expander" style="position:absolute; left:370px; top:10px; width:200px">Herbert Robbins was an American mathematician and statistician. Together with Sutton Monro, invented the stochastic gradient method, also known as the Robbins–Monro method.</figcaption>  
+    <img style="margin-left:100px;  width: 200px" src="https://upload.wikimedia.org/wikipedia/en/7/76/1966-HerbertRobbins.jpg" alt="">
+   <figcaption id="expander" style="position:absolute; left:370px; top:10px; width:200px">Herbert Robbins was an American mathematician and statistician. Together with Sutton Monro, invented the stochastic gradient method, also known as the Robbins–Monro method.</figcaption>
   </figure>
 
   <p>
@@ -175,7 +175,7 @@
   \end{equation}</p>
   <p>This class of problems arises often in machine learning, where the $f_i$ is the cost of mis-classifying each element in the dataset.
   </p>
-  
+
   <p>The Stochastic Gradient Method can motivated as an approximation to gradient descent in which at each iteration we approximate the gradient as $\nabla f_i(\xx_t) \approx \nabla f(\xx_t)$:</p>
 
   <h2>The Stochastic Gradient Method</h2>
@@ -202,15 +202,15 @@
     \sum_{i=1}^\infty \gamma_t = \infty \text{ and } \sum_{i=1}^\infty \gamma_t^2 < \infty
     $$
     The most popular sequence to verify this is $\gamma_t = \frac{C}{t}$ for some constant $C$.
-    This is often referred to as a "decreasing step-size" sequence, although in fact the sequence does not need to be monotonically decreasing.
+    This is often referred to as a "decreasing step-size" sequence, although in fact the sequence does not need to be monotonically decreasing.<dt-cite key="bottou2016optimization"></dt-cite>
     </li>
   </ul>
   </p>
 
 <h2>Examples</h2>
-<p>A least squares problem can be written in the form acceptable by SGD since 
+<p>A least squares problem can be written in the form acceptable by SGD since
 \begin{equation}
-\frac{1}{n}\|\boldsymbol{A} \xx - \boldsymbol{b}\|^2 = \frac{1}{n} \sum_{i=1}^n (\boldsymbol{A}_i^T \xx - \boldsymbol{b}_i)^2 
+\frac{1}{n}\|\boldsymbol{A} \xx - \boldsymbol{b}\|^2 = \frac{1}{n} \sum_{i=1}^n (\boldsymbol{A}_i^T \xx - \boldsymbol{b}_i)^2
 \end{equation}
 where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
 </p>
@@ -241,13 +241,73 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
 <figure style = "position:relative; width:984px; height:400px;">
   <div id="banana3" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
   <div id="sliderAlpha3" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
-    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.02</text>
+    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.05</text>
   </div>
   <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
     Stochastic Gradient with decreasing step sizes is quite robust to the choice of step size. On one hand there is really no good way to set the step size (e.g., no equivalent of line search for Gradient Descent) but on the other hand it converges for a wide range of step sizes.
   </figcaption>
 
 </figure>
+
+<h2>SGD with momentum</h2>
+
+<p>SGD is often augmented with a <i>momentum</i> term, so that the update in \eqref{eq:update_rule} becomes
+$$
+\boldsymbol{x}_{t+1} = \boldsymbol{x}_t - \gamma_t \nabla f_i(\xx_t) + \underbrace{\beta (\xx_t - \xx_{t-1})}_{\text{momentum}}
+$$
+</p>
+<p>Momentum adds the previous update direction to the gradient. This has two beneficial effects:
+<ul>
+  <li>Stabilizing the update in case of outlayer gradients.</li>
+  <li>Escaping regions of flat curvature.</li>
+</ul>
+</p>
+
+
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana5" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha5" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.2</text>
+  </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
+    SGD with a momentum coefficient of $\beta=0.2$
+  </figcaption>
+</figure>
+
+
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana4" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha4" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.05</text>
+  </div>
+  <figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
+    SGD with a momentum coefficient of $\beta=0.2$
+  </figcaption>
+</figure>
+
+<!-- <dt-byline class="l-page"></dt-byline>
+<figure style = "position:relative; width:984px; height:400px;">
+  <div id="banana5" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+  <div id="sliderAlpha5" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+    <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.2</text>
+  </div>
+
+</figure>
+
+
+</figure>
+
+<dt-byline class="l-page"></dt-byline>
+<figure style = "position:relative; width:984px; height:400px;">
+<div id="banana6" style="position:relative; border: 1px solid rgba(0, 0, 0, 0.2);"></div>
+<div id="sliderAlpha6" style="position:absolute; width:300px; height: 50px; left:20px; top: 320px;">
+  <text class="figtext" style="top: -5px; left: 20px; position: relative;">Step-size α = 0.02</text>
+</div>
+<figcaption id="Bananacaption" style="position:absolute; width: 420px; height: 90px; left: 540px; top: 320px;">
+  Stochastic Gradient with decreasing step sizes is quite robust to the choice of step size. On one hand there is really no good way to set the step size (e.g., no equivalent of line search for Gradient Descent) but on the other hand it converges for a wide range of step sizes.
+</figcaption>
+
+</figure> -->
 
 
 
@@ -279,7 +339,7 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
               .startxval(0.05)
               .cRadius(7)
               .shifty(-12)
-              .margins(20,20)  
+              .margins(20,20)
   var getalpha = slidera( d3.select("#sliderAlpha")).xval
   var getbeta = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
@@ -302,13 +362,13 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
               .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
               .change( function (i) {
                 d3.select("#sliderAlpha2").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
-                iterChange2(getalpha(), getbeta(), getw0() )
+                iterChange2(getalpha2(), getbeta2(), getw02() )
               } )
               .startxval(0.2)
               .cRadius(7)
               .shifty(-12)
-              .margins(20,20)  
-  
+              .margins(20,20)
+
   var getalpha2 = slidera2( d3.select("#sliderAlpha2")).xval
   var getbeta2 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
@@ -325,7 +385,7 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
   var iterChange3 = iterControl3.control
   var getw03 = iterControl3.w0
 
-  var update2 = function (i,j) { iterChange2(i, 0, getw02()) }
+  var update3 = function (i,j) { iterChange3(i, 0, getw03()) }
 
   var slidera3 = sliderGen([230, 40])
               .ticks([0,0.01,0.02])
@@ -338,24 +398,88 @@ where $\boldsymbol{A}_i$ is the $i$-th row of the matrix $\boldsymbol{A}$ .
               .cRadius(7)
               .shifty(-12)
               .margins(20,20)
-  
+
   var getalpha3 = slidera3( d3.select("#sliderAlpha3")).xval
   var getbeta3 = function() {return 0;}
   // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
 
   iterChange3(getalpha3(), getbeta3(), getw03() )
 
+
+  // ---
+
+  // Render Foreground
+  var iterControl4 = genIterDiagram(eyef, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runStochasticGradient, true, true, 300)
+                    .alpha(0.003)
+                    .beta(0.9)
+                    (d3.select("#banana4").style("position","relative"))
+
+  var iterChange4 = iterControl4.control
+  var getw04 = iterControl4.w0
+
+  var update4 = function (i,j) { iterChange4(i, 0, getw04()) }
+
+  var slidera4 = sliderGen([230, 40])
+              .ticks([0,0.01,0.02])
+              .ticktitles( function(d,i) { return ["0", "0.01", "0.02"][i]})
+              .change( function (i) {
+                d3.select("#sliderAlpha4").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+                iterChange4(getalpha4(), getbeta4(), getw04() )
+              } )
+              .startxval(0.003)
+              .cRadius(7)
+              .shifty(-12)
+              .margins(20,20)
+
+  var getalpha4 = slidera4( d3.select("#sliderAlpha4")).xval
+  var getbeta4 = function() {return 0.9;}
+  // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+
+  iterChange4(getalpha4(), getbeta4(), getw04() )
+
+
+
+  // Render Foreground
+  var iterControl5 = genIterDiagram(well_conditioned_quad, [0,0], [[-2,2],[2/3 + 0.4,-2/3 + 0.4]], runStochasticGradientDecreasingSteps, true, true, 300)
+                    .alpha(0.003)
+                    .beta(0.9)
+                    (d3.select("#banana5").style("position","relative"))
+
+  var iterChange5 = iterControl5.control
+  var getw05 = iterControl5.w0
+
+  var update5 = function (i,j) { iterChange5(i, 0, getw05()) }
+
+  var slidera5 = sliderGen([230, 40])
+              .ticks([0, 0.5, 1.0])
+              .ticktitles( function(d,i) { return ["0", "0.5", "1.0"][i]})
+              .change( function (i) {
+                d3.select("#sliderAlpha5").selectAll(".figtext").html("Step-size α = " + getalpha().toPrecision(2) )
+                iterChange5(getalpha5(), getbeta5(), getw05() )
+              } )
+              .startxval(0.2)
+              .cRadius(7)
+              .shifty(-12)
+              .margins(20,20)
+
+  var getalpha5 = slidera5( d3.select("#sliderAlpha5")).xval
+  var getbeta5 = function() {return 0.9;}
+  // var getbeta  = sliderb( d3.select("#sliderBeta")).xval
+
+  iterChange5(getalpha5(), getbeta5(), getw05() )
+
+
   </script>
 
 
-<h2>Convergence</h2>
+<!-- <h2>Convergence</h2>
 <p>Why does the SGM method converge despite its update being a very rough estimate of the gradient?. To answer this, we must first understand the <i>unbiasedness</i> property of its update.</p>
 <p> <b>Unbiasedness of the SGM update</b>. Let $\mathbb{E}_t$ denote the expectation with respect to the choice of random sample ($i$) at iteration $t$. Then since the index $i$ is chosen <i>uniformly</i> at random we have
 $$
 \mathbb{E}_t \nabla f_{i_t}(\xx_t) = \sum_{i=1}^n \nabla f_{i}(\xx_t) P(i_t = i)
  = \frac{1}{n}\sum_{i=1}^n \nabla f_{i}(\xx_t) = \nabla f(\xx_t)$$
-This is the crucial property that makes SGD work. For a full proof, see e.g.<dt-cite key="bottou2016optimization"></dt-cite>
- </p>
+This is the crucial property that makes SGD work. For a full proof, see e.g.
+ </p> -->
 
 
 <!-- <p>
@@ -377,9 +501,9 @@ Rearranging and assuming that the variance is bounded, i.e., $\mathbb{E}_t\|\nab
  \gamma_t \| \nabla f(\xx_t)\|^2 \leq f(\xx_t) - \mathbb{E}_t f(\xx_{t+1}) + \frac{\gamma_t^2 L}{2}\mathbb{E}_t\|\nabla f_i(\xx_t)\|^2
 \end{align}
 </p> -->
-  
+
   <dt-appendix class="centered">
-  </dt-appendix> 
+  </dt-appendix>
 
   <script type="text/bibliography">
   @article{robbins1951stochastic,
